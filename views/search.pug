@@ -1,0 +1,21 @@
+extends base.pug
+block content 
+  .container.mt-4
+    .container 
+    form(action="/fruits", method="get")
+      .row
+        .col 
+          label(for="q") Search Database
+        .col
+          input(type="text", id="q", name="q")
+        .col
+          button.btn.btn-outline-primary(type="submit") Search
+    if results
+      h4.mt-4 Search Results
+      each result in results
+        .container.mt-2
+          .card 
+            .card-body 
+              h3.card-title #{result.title}
+              p.card-text Score - #{result.score}
+              a.card-title(href=result.url) Go to page
