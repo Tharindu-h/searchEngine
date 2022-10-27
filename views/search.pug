@@ -9,6 +9,9 @@ block content
         .col
           input(type="text", id="q", name="q")
         .col
+          label(for="boost") Boost with Page Rank
+          input(type="checkbox", id="boost", name="boost", value="true")
+        .col
           button.btn.btn-outline-primary(type="submit") Search
     if results
       h4.mt-4 Search Results

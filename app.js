@@ -8,6 +8,7 @@ const dbPsswd = process.env.MONGODB_PSSWD;
 const dbUrl = `mongodb+srv://tharindu:${dbPsswd}@cluster0.pycye8m.mongodb.net/?retryWrites=true&w=majority`;
 const dbModels = require('./models/schema');
 const pageRank = require('./pageRank');
+const util = require('./util');
 const elasticlunr = require("elasticlunr");
 
 let fruitRank = pageRank.getPageRank().then(val => {
@@ -72,9 +73,15 @@ app.get('/fruits', function(req, res){
   if (s.length > 0){
     for (let i = 0; i < 10; i++){
       let doc = index.documentStore.getDoc(s[i].ref);
-      doc.score = s[i].score;
+      if (req.query.boost == "true"){
+        doc.score = s[i].score * fruitRank.get(doc.url);
+      }
+      else{
+        doc.score = s[i].score;
+      }
       results.push(doc);
     }
+    results.sort(util.compareNumbers);
   }
 
   res.format({
