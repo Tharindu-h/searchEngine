@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const dbPsswd = process.env.MONGODB_PSSWD;
 const dbUrl = `mongodb+srv://tharindu:${dbPsswd}@cluster0.pycye8m.mongodb.net/?retryWrites=true&w=majority`;
 const dbModels = require('./models/schema');
-const pageRank = require('./lab5');
+const pageRank = require('./pageRank');
 
 let rank = pageRank.getPageRank().then(x => {
   rank = x;
