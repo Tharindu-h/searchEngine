@@ -74,7 +74,11 @@ async function calculatePageRank(){
     //sort the arrays
     let pageRankVals = x0.getRow(0);
     bubbleSortDescendingOrder(pageRankVals, allFruitPages);
-    return pageRankVals;
+    let pageRankMap = new Map();
+    for (let i = 0; i < allFruitPages.length; i++){
+      pageRankMap.set(allFruitPages[i].url, pageRankVals[i]);
+    }
+    return pageRankMap;
     //print out the 25 most popular pages
     // for (let i = 0; i < 25; i++){
     //   let buildString = `#${i+1}. (${pageRankVals[i]}) ${allFruitPages[i].url}`;
