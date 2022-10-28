@@ -12,6 +12,15 @@ block content
           label(for="boost") Boost with Page Rank
           input(type="checkbox", id="boost", name="boost", value="true")
         .col
+          label(for="limit") Number of Search Results
+          select.select.form-control-sm(name='limit')
+            - var values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
+              each val in values
+                if val  == 10
+                  option(value=val, selected=true)=val
+                else
+                  option(value=val)=val
+        .col
           button.btn.btn-outline-primary(type="submit") Search
     if results
       h4.mt-4 Search Results

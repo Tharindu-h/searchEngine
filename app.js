@@ -69,27 +69,28 @@ app.get('/fruits', function(req, res){
       contents: {boost: 1}
     }
   });
-  let results = []
-  if (s.length > 0){
-    for (let i = 0; i < 10; i++){
-      let doc = index.documentStore.getDoc(s[i].ref);
-      if (req.query.boost == "true"){
-        doc.score = s[i].score * fruitRank.get(doc.url);
-      }
-      else{
-        doc.score = s[i].score;
-      }
-      results.push(doc);
+  let results = [];
+
+  for (let i = 0; i < s.length; i++){
+    let doc = index.documentStore.getDoc(s[i].ref);
+    if (req.query.boost == "true"){
+      doc.score = s[i].score * fruitRank.get(doc.url);
     }
-    results.sort(util.compareNumbers);
+    else{
+      doc.score = s[i].score;
+    }
+    results.push(doc);
   }
+  results.sort(util.compareNumbers);
+  
 
   res.format({
     'application/json': function(){
-      res.status(200).json(results);
+      res.status(200).json(results.slice(req.query.limit));
       return;
     },
     'text/html': function(){
+      results = results.slice(0, req.query.limit);
       let page = compiledSearch({results});
       res.status(200).send(page);
       return;
