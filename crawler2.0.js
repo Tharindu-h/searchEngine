@@ -71,10 +71,7 @@ function crawlUrl(url){
 
 crawlUrl('https://man7.org/linux/man-pages/man1/bash.1.html');
 c.on("drain", function(){
-  //saveAllPages();
-  console.log(crawledPages[0].url);
-  console.log(crawledPages[0].title);
-  console.log(crawledPages[0].links);
+  saveAllPages();
 });
 
 function saveAllPages(){

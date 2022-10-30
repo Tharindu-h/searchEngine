@@ -26,7 +26,7 @@ async function calculatePageRank(){
 
     //generate the adjacency matrix
     for (let i = 0; i < allFruitPages.length; i++){
-      let outgoingLinks = new Set(allFruitPages[i].links);
+      let outgoingLinks = new Set(allFruitPages[i].outgoingLinks);
       let row = [];
       for (let j = 0; j < allFruitPages.length; j++){
         if (outgoingLinks.has(allFruitPages[j].url)){
