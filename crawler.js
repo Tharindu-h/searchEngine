@@ -43,14 +43,14 @@ function crawlUrl(url){
         let page = new dbModels.FruitPage({
           "url": url,
           "title": title,
-          "links": [],
+          "outgoingLinks": [],
           "contents": contents,
           "numLinks": 0
         });
         $(links).each(function(i, link){
           let currURL = getUrl($(link).attr('href'));
           crawlUrl(currURL);
-          page.links.push(currURL);
+          page.outgoingLinks.push(currURL);
         });
         page.numLinks = links.length;
         linkedurls.push(page);

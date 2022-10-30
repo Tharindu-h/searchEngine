@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const FruitPageSchema = new mongoose.Schema({
   url: String,
   title: String,
-  links: [String],
+  outgoingLinks: [String],
+  incomingLinks: [String],
   contents: String,
   numLinks: Number
 });
