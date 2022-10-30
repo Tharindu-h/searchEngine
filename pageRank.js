@@ -7,17 +7,15 @@ const eDistance = require('euclidean-distance');
 
 const alphaVal = 0.1;
 
-let allFruitPages = [];
-let m = [];
-let randTeleportProbability = [];
-
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(console.log("Connected to mongodb"))
   .catch(err => console.log(err));
 
-async function calculatePageRank(){
+async function calculateFruitPageRank(){
+  let m = [];
+  let allFruitPages = [];
   let rank = dbModels.FruitPage.find({})
   .then(pages => {
     for (let i = 0; i < pages.length; i++){
@@ -39,36 +37,8 @@ async function calculatePageRank(){
       m.push(row);
     }
 
-    //generate the transition probability matrix
-    for (let i = 0; i < m.length; i ++){
-      let numOnes = 0;
-      for(let j = 0; j < m[i].length; j++){
-        if (m[i][j] == 1) {   numOnes++;   }
-      }
-      for(let j = 0; j < m[i].length; j++){
-        if(numOnes == 0){
-          m[i][j] = 1/(m[i].length);
-          continue;
-        }
-        if(m[i][j] == 1) {   m[i][j] = 1/numOnes;   }
-      }
-    }
-    //generate random probability matrix
-    for (let i = 0; i < 1000; i++){
-      let tempArr = [];
-      for (let j = 0; j < 1000; j++){
-        tempArr.push(1/1000);
-      }
-      randTeleportProbability.push(tempArr);
-    }
 
-    //generate the adjacency matrix mutiplied by (1 - aplha)
-    let adjMatrix = new Matrix(m);
-    randTeleportProbability = new Matrix(randTeleportProbability);
-    adjMatrix = adjMatrix.mul(1 - alphaVal);
-    randTeleportProbability = randTeleportProbability.mul(alphaVal);
-    let combinedMatrix = Matrix.add(adjMatrix, randTeleportProbability);
-
+    let combinedMatrix = generateMatrix(m);
     //find the steady-state probability vector π
     let x0 = powerIteration(combinedMatrix);
     //sort the arrays
@@ -78,18 +48,102 @@ async function calculatePageRank(){
     for (let i = 0; i < allFruitPages.length; i++){
       pageRankMap.set(allFruitPages[i].url, pageRankVals[i]);
     }
-    return pageRankMap;
+    //return pageRankMap;
     //print out the 25 most popular pages
-    // for (let i = 0; i < 25; i++){
-    //   let buildString = `#${i+1}. (${pageRankVals[i]}) ${allFruitPages[i].url}`;
-    //   console.log(buildString);
-    // }
+    for (let i = 0; i < 25; i++){
+      let buildString = `#${i+1}. (${pageRankVals[i]}) ${allFruitPages[i].url}`;
+      console.log(buildString);
+    }
 
   })
   .catch(err => {
     console.log(err);
   });
   return rank;
+}
+
+async function calculateManPageRank(){
+  let m = [];
+  let allManPages = [];
+  let rank = dbModels.ManPage.find({})
+  .then(pages => {
+    for (let i = 0; i < pages.length; i++){
+      allManPages.push(pages[i]);
+    }
+
+    //generate the adjacency matrix
+    for (let i = 0; i < allManPages.length; i++){
+      let outgoingLinks = new Set(allManPages[i].outgoingLinks);
+      let row = [];
+      for (let j = 0; j < allManPages.length; j++){
+        if (outgoingLinks.has(allManPages[j].url)){
+          row.push(1);
+        }
+        else{
+          row.push(0);
+        }
+      }
+      m.push(row);
+    }
+
+
+    let combinedMatrix = generateMatrix(m);
+    //find the steady-state probability vector π
+    let x0 = powerIteration(combinedMatrix);
+    //sort the arrays
+    let pageRankVals = x0.getRow(0);
+    bubbleSortDescendingOrder(pageRankVals, allManPages);
+    let pageRankMap = new Map();
+    for (let i = 0; i < allManPages.length; i++){
+      pageRankMap.set(allManPages[i].url, pageRankVals[i]);
+    }
+    //return pageRankMap;
+    //print out the 25 most popular pages
+    for (let i = 0; i < 25; i++){
+      let buildString = `#${i+1}. (${pageRankVals[i]}) ${allManPages[i].url}`;
+      console.log(buildString);
+    }
+
+  })
+  .catch(err => {
+    console.log(err);
+  });
+  return rank;
+}
+
+function generateMatrix(m){
+  let randTeleportProbability = [];
+
+  //generate the transition probability matrix
+  for (let i = 0; i < m.length; i ++){
+    let numOnes = 0;
+    for(let j = 0; j < m[i].length; j++){
+      if (m[i][j] == 1) {   numOnes++;   }
+    }
+    for(let j = 0; j < m[i].length; j++){
+      if(numOnes == 0){
+        m[i][j] = 1/(m[i].length);
+        continue;
+      }
+      if(m[i][j] == 1) {   m[i][j] = 1/numOnes;   }
+    }
+  }
+  //generate random probability matrix
+  for (let i = 0; i < 1000; i++){
+    let tempArr = [];
+    for (let j = 0; j < 1000; j++){
+      tempArr.push(1/1000);
+    }
+    randTeleportProbability.push(tempArr);
+  }
+
+  //generate the adjacency matrix mutiplied by (1 - aplha)
+  let adjMatrix = new Matrix(m);
+  randTeleportProbability = new Matrix(randTeleportProbability);
+  adjMatrix = adjMatrix.mul(1 - alphaVal);
+  randTeleportProbability = randTeleportProbability.mul(alphaVal);
+  let combinedMatrix = Matrix.add(adjMatrix, randTeleportProbability);
+  return combinedMatrix;
 }
 
 
@@ -142,11 +196,17 @@ function bubbleSortDescendingOrder(array, array2){
   return array;
 }
 
-async function getPageRank(){
-  let value = await calculatePageRank();
+async function getFruitPageRank(){
+  let value = await calculateFruitPageRank();
+  return value;
+}
+
+async function getManPageRank(){
+  let value = await calculateManPageRank();
   return value;
 }
 
 module.exports = {
-  getPageRank: getPageRank
+  getFruitPageRank: getFruitPageRank,
+  getManPageRank: getManPageRank
 }

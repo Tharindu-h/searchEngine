@@ -11,8 +11,12 @@ const pageRank = require('./pageRank');
 const util = require('./util');
 const elasticlunr = require("elasticlunr");
 
-let fruitRank = pageRank.getPageRank().then(val => {
+let fruitRank = pageRank.getFruitPageRank().then(val => {
   fruitRank = val;
+});
+
+let manpageRank = pageRank.getManPageRank().then(val => {
+  manpageRank = val;
 });
 
 //build index of the pages
