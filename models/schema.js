@@ -8,8 +8,20 @@ const FruitPageSchema = new mongoose.Schema({
   numLinks: Number
 });
 
+const ManPageSchema = new mongoose.Schema({
+  url: String,
+  title: String,
+  outgoingLinks: [String],
+  incomingLinks: [String],
+  contents: String,
+  numOutLinks: Number,
+  numInLinks: Number
+});
+
 const FruitPageModel = mongoose.model('FruitPage', FruitPageSchema);
+const ManPageModel   = mongoose.model('ManPage', ManPageSchema);
 
 module.exports = {
-  FruitPage: FruitPageModel
+  FruitPage: FruitPageModel,
+  ManPage: ManPageModel
 }
