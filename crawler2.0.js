@@ -32,7 +32,7 @@ const c = new Crawler({
 });
 
 function crawlUrl(url){
-  if (seenUrls[url] || urlCount >= 1) return;
+  if (seenUrls[url] || urlCount >= 1000) return;
   seenUrls[url] = true;
   urlCount++;
   console.log(`Crawling: ${url}`);
