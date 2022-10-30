@@ -6,7 +6,8 @@ const FruitPageSchema = new mongoose.Schema({
   outgoingLinks: [String],
   incomingLinks: [String],
   contents: String,
-  numLinks: Number
+  numOutLinks: Number,
+  numInLinks: Number
 });
 
 const ManPageSchema = new mongoose.Schema({
