@@ -19,8 +19,8 @@ let manpageRank = pageRank.getManPageRank().then(val => {
   manpageRank = val;
 });
 
-//build index of the pages
-const index = elasticlunr(function () {
+//build `index` of the fruit pages
+const fruitIndex = elasticlunr(function () {
   this.addField('title');
   this.addField('contents');
   this.setRef('_id');
@@ -36,13 +36,30 @@ mongoose.connect(dbUrl, {
 dbModels.FruitPage.find({})
 .then(pages => {
   pages.forEach(p => {
-    index.addDoc(p.toObject());
+    fruitIndex.addDoc(p.toObject());
   });
 })
 .catch(err => {
   console.log(err);
 }); 
 
+//build `index` of the man pages
+const manIndex = elasticlunr(function () {
+  this.addField('title');
+  this.addField('contents');
+  this.setRef('_id');
+  this.setRef('url');
+});
+
+dbModels.ManPage.find({})
+.then(pages => {
+  pages.forEach(p => {
+    manIndex.addDoc(p.toObject());
+  });
+})
+.catch(err => {
+  console.log(err);
+}); 
 
 // Automatically parse JSON data
 app.use(express.json());
@@ -67,7 +84,7 @@ app.get('/', function(req, res, next){
 });
 
 app.get('/fruits', function(req, res){
-  let s = index.search(req.query.q, {
+  let s = fruitIndex.search(req.query.q, {
     fields: {
       title: {boost: 2},
       contents: {boost: 1}
@@ -76,7 +93,7 @@ app.get('/fruits', function(req, res){
   let results = [];
 
   for (let i = 0; i < s.length; i++){
-    let doc = index.documentStore.getDoc(s[i].ref);
+    let doc = fruitIndex.documentStore.getDoc(s[i].ref);
     if (req.query.boost == "true"){
       doc.score = s[i].score * fruitRank.get(doc.url);
     }
@@ -90,7 +107,8 @@ app.get('/fruits', function(req, res){
 
   res.format({
     'application/json': function(){
-      res.status(200).json(results.slice(req.query.limit));
+      results = results.slice(0, req.query.limit);
+      res.status(200).json(results);
       return;
     },
     'text/html': function(){
@@ -102,6 +120,43 @@ app.get('/fruits', function(req, res){
   });
 });
 
+
+app.get('/personal', function(req, res){
+  let s = manIndex.search(req.query.q, {
+    fields: {
+      title: {boost: 2},
+      contents: {boost: 1}
+    }
+  });
+  let results = [];
+
+  for (let i = 0; i < s.length; i++){
+    let doc = manIndex.documentStore.getDoc(s[i].ref);
+    if (req.query.boost == "true"){
+      doc.score = s[i].score * manpageRank.get(doc.url);
+    }
+    else{
+      doc.score = s[i].score;
+    }
+    results.push(doc);
+  }
+  results.sort(util.compareNumbers);
+  
+
+  res.format({
+    'application/json': function(){
+      results = results.slice(0, req.query.limit);
+      res.status(200).json(results);
+      return;
+    },
+    'text/html': function(){
+      results = results.slice(0, req.query.limit);
+      let page = compiledSearch({results});
+      res.status(200).send(page);
+      return;
+    }
+  });
+})
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`)

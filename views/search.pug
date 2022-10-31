@@ -2,7 +2,7 @@ extends base.pug
 block content 
   .container.mt-4
     .container 
-    form(action="/fruits", method="get")
+    form(id="form1", name="form1", action="/fruits", method="get")
       .row
         .col 
           label(for="q") Search Database
@@ -21,6 +21,11 @@ block content
                 else
                   option(value=val)=val
         .col
+          label(for="recipient") Recipient
+          select.select.form-control-sm(name='recipient', id="recipient", onChange="chgAction()")
+            option(value=1)="/fruits"
+            option(value=2)="/personal"
+        .col
           button.btn.btn-outline-primary(type="submit") Search
     if results
       h4.mt-4 Search Results
@@ -31,3 +36,16 @@ block content
               h3.card-title #{result.title}
               p.card-text Score - #{result.score}
               a.card-title(href=result.url) Go to page
+
+  script. 
+    function chgAction() {
+      var form = document.form1;
+    
+      if (form.recipient.selectedIndex == 0){
+        form.action = "/fruits";
+      }
+      else if (form.recipient.selectedIndex == 1){
+        form.action = "/personal";
+      }
+    
+    }
