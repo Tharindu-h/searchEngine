@@ -45,14 +45,14 @@ function crawlUrl(url){
           "title": title,
           "outgoingLinks": [],
           "contents": contents,
-          "numLinks": 0
+          "numOutLinks": 0
         });
         $(links).each(function(i, link){
           let currURL = getUrl($(link).attr('href'));
           crawlUrl(currURL);
           page.outgoingLinks.push(currURL);
         });
-        page.numLinks = links.length;
+        page.numOutLinks = links.length;
         linkedurls.push(page);
       }
       done();
