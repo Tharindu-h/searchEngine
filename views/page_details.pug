@@ -1,0 +1,23 @@
+extends base.pug
+block content 
+  .container.mt-4 
+    h3 #{pageDetails.title}
+    table.table 
+      tbody
+        tr
+          th URL:
+          td #{pageDetails.url}
+        tr
+          th Incoming Links:
+          td
+            each link in pageDetails.incomingLinks
+                ul
+                    li
+                        a(href=link)=link
+        tr
+          th Outgoing Links:
+          td
+            each link in pageDetails.outgoingLinks
+                ul
+                    li
+                        a(href=link)=link

@@ -68,6 +68,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Compiled pug templates
 const compiledSearch = pug.compileFile('./views/search.pug');
+const compiledPageDetails = pug.compileFile('./views/page_details.pug');
 
 
 app.get('/', function(req, res, next){
@@ -132,7 +133,6 @@ app.get('/personal', function(req, res){
     }
   });
   let results = [];
-  console.log(manIndex.documentStore.getDoc(s[0].ref).title);
 
   for (let i = 0; i < s.length; i++){
     let doc = manIndex.documentStore.getDoc(s[i].ref);
@@ -162,7 +162,68 @@ app.get('/personal', function(req, res){
       return;
     }
   });
-})
+});
+
+app.param('fruitPageID', function(req, res, next){
+
+  dbModels.FruitPage.findById(req.params.fruitPageID)
+  .exec()
+  .then(page => {
+    req.post = page;
+    next();
+    return;
+  })
+  .catch(err => {
+    res.status(404).send("Unknown fruit page ID");
+    return;
+  });
+});
+
+app.get('/fruits/:fruitPageID', function(req, res){
+  res.format({
+    'application/json': function(){
+      res.status(200).json(req.post);
+      return;
+    },
+    'text/html': function(){
+      let pageDetails = req.post;
+      let page = compiledPageDetails({pageDetails});
+      res.status(200).send(page);
+      return;
+    }
+  });
+});
+
+app.param('manPageID', function(req, res, next){
+
+  dbModels.ManPage.findById(req.params.manPageID)
+  .exec()
+  .then(page => {
+    console.log(page);
+    req.post = page;
+    next();
+    return;
+  })
+  .catch(err => {
+    res.status(404).send("Unknown fruit page ID");
+    return;
+  });
+});
+
+app.get('/personal/:manPageID', function(req, res){
+  res.format({
+    'application/json': function(){
+      res.status(200).json(req.post);
+      return;
+    },
+    'text/html': function(){
+      let pageDetails = req.post;
+      let page = compiledPageDetails({pageDetails});
+      res.status(200).send(page);
+      return;
+    }
+  });
+});
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`)
