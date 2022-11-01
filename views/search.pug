@@ -34,7 +34,7 @@ block content
           .card 
             .card-body 
               h3.card-title #{result.title}
-              p.card-text Score - #{result.score}
+              p.card-text Page Rank Score - #{result.pageRank}
               a.card-title(href=result.url) Go to page
 
   script. 
@@ -47,5 +47,4 @@ block content
       else if (form.recipient.selectedIndex == 1){
         form.action = "/personal";
       }
-    
     }
