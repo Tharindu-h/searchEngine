@@ -6,7 +6,8 @@ block content
       tbody
         tr
           th URL:
-          td #{pageDetails.url}
+          td 
+            a(href=`${pageDetails.url}`)=pageDetails.url
         tr
           th Incoming Links:
           td

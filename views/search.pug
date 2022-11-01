@@ -36,7 +36,7 @@ block content
               h3.card-title #{result.title}
               p.card-text Page Rank Score - #{result.pageRank}
               a.card-title(href=result.url) Go to page
-              a.card-body(href=`fruits/${result._id}`) See Page Information
+              a.card-body(href=`${url + result._id}`) See Page Information
 
   script. 
     function chgAction() {

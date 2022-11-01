@@ -117,7 +117,7 @@ app.get('/fruits', function(req, res){
     },
     'text/html': function(){
       results = results.slice(0, req.query.limit);
-      let page = compiledSearch({results});
+      let page = compiledSearch({results, url: "fruits/"});
       res.status(200).send(page);
       return;
     }
@@ -157,7 +157,7 @@ app.get('/personal', function(req, res){
     },
     'text/html': function(){
       results = results.slice(0, req.query.limit);
-      let page = compiledSearch({results});
+      let page = compiledSearch({results, url: "personal/"});
       res.status(200).send(page);
       return;
     }
@@ -199,7 +199,6 @@ app.param('manPageID', function(req, res, next){
   dbModels.ManPage.findById(req.params.manPageID)
   .exec()
   .then(page => {
-    console.log(page);
     req.post = page;
     next();
     return;
