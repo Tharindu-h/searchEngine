@@ -54,6 +54,7 @@ const manIndex = elasticlunr(function () {
 dbModels.ManPage.find({})
 .then(pages => {
   pages.forEach(p => {
+    p.title = p.title.split("(")[0]; // temp change gotta recrawl later and add a field to schema that has titles without man page sections
     manIndex.addDoc(p.toObject());
   });
 })
@@ -96,9 +97,11 @@ app.get('/fruits', function(req, res){
     let doc = fruitIndex.documentStore.getDoc(s[i].ref);
     if (req.query.boost == "true"){
       doc.score = s[i].score * fruitRank.get(doc.url);
+      doc.pageRank = fruitRank.get(doc.url);
     }
     else{
       doc.score = s[i].score;
+      doc.pageRank = fruitRank.get(doc.url);
     }
     results.push(doc);
   }
@@ -129,14 +132,17 @@ app.get('/personal', function(req, res){
     }
   });
   let results = [];
+  console.log(manIndex.documentStore.getDoc(s[0].ref).title);
 
   for (let i = 0; i < s.length; i++){
     let doc = manIndex.documentStore.getDoc(s[i].ref);
     if (req.query.boost == "true"){
       doc.score = s[i].score * manpageRank.get(doc.url);
+      doc.pageRank = manpageRank.get(doc.url);
     }
     else{
       doc.score = s[i].score;
+      doc.pageRank = manpageRank.get(doc.url);
     }
     results.push(doc);
   }
