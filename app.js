@@ -45,7 +45,7 @@ dbModels.FruitPage.find({})
 
 //build `index` of the man pages
 const manIndex = elasticlunr(function () {
-  this.addField('title');
+  this.addField('command');
   this.addField('contents');
   this.setRef('_id');
   this.setRef('url');
@@ -54,7 +54,6 @@ const manIndex = elasticlunr(function () {
 dbModels.ManPage.find({})
 .then(pages => {
   pages.forEach(p => {
-    p.title = p.title.split("(")[0]; // temp change gotta recrawl later and add a field to schema that has titles without man page sections
     manIndex.addDoc(p.toObject());
   });
 })
@@ -128,7 +127,7 @@ app.get('/fruits', function(req, res){
 app.get('/personal', function(req, res){
   let s = manIndex.search(req.query.q, {
     fields: {
-      title: {boost: 2},
+      command: {boost: 2},
       contents: {boost: 1}
     }
   });
@@ -180,12 +179,30 @@ app.param('fruitPageID', function(req, res, next){
 });
 
 app.get('/fruits/:fruitPageID', function(req, res){
+  let tempWords = req.post.contents.split("\n");
+  let words = [];
+  for (let i = 0; i < tempWords.length; i++){
+    let count = 1
+    let m = {};
+    for (let j = 0; j < tempWords.length; j++){
+      if (tempWords[j] == tempWords[i] && j != i){
+        count++;
+      }
+    }
+    if (tempWords[i] == ''){   continue;   }
+    m.word = tempWords[i].replace(/(\r\n|\n|\r)/gm, "");
+    m.occurs = count;
+    words.push(m);
+  }
+
   res.format({
     'application/json': function(){
+      req.post.words = words;
       res.status(200).json(req.post);
       return;
     },
     'text/html': function(){
+      req.post.words = words;
       let pageDetails = req.post;
       let page = compiledPageDetails({pageDetails});
       res.status(200).send(page);

@@ -12,13 +12,19 @@ block content
           th Incoming Links:
           td
             each link in pageDetails.incomingLinks
-                ul
-                    li
-                        a(href=link)=link
+              ul
+                li
+                  a(href=link)=link
         tr
           th Outgoing Links:
           td
             each link in pageDetails.outgoingLinks
-                ul
-                    li
-                        a(href=link)=link
+              ul
+                li
+                  a(href=link)=link
+        tr 
+          th Word Occurrences: 
+          td
+            each w in pageDetails.words 
+              ul
+                li #{w.word} : occurs #{w.occurs} times
