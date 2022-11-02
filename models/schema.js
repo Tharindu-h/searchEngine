@@ -10,20 +10,29 @@ const FruitPageSchema = new mongoose.Schema({
   numInLinks: Number
 });
 
+const WordSchema = new mongoose.Schema({
+  word: String,
+  occurs: Number
+});
+
 const ManPageSchema = new mongoose.Schema({
   url: String,
   title: String,
+  command: String,
   outgoingLinks: [String],
   incomingLinks: [String],
   contents: String,
+  words: [WordSchema],
   numOutLinks: Number,
   numInLinks: Number
 });
 
 const FruitPageModel = mongoose.model('FruitPage', FruitPageSchema);
+const WordModel      = mongoose.model('Word', WordSchema);
 const ManPageModel   = mongoose.model('ManPage', ManPageSchema);
 
 module.exports = {
   FruitPage: FruitPageModel,
+  Word: WordModel,
   ManPage: ManPageModel
 }
