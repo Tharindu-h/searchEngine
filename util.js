@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const dbPsswd = process.env.MONGODB_PSSWD;
 const dbUrl = `mongodb+srv://tharindu:${dbPsswd}@cluster0.pycye8m.mongodb.net/?retryWrites=true&w=majority`;
 const dbModels = require('./models/schema');
+const pageRank = require('./pageRank');
 
 // used to sort arrays in decending order
 // passed as a function to Array.prototype.sort()
@@ -101,6 +102,41 @@ function updateManPages(){
   });
 }
 
+function addPageRankToFruitPages(){
+  pageRank.getFruitPageRank().then(val => {
+    dbModels.FruitPage.find({})
+    .then(pages => {
+      let modifiedPages = [];
+      for(let i = 0; i < pages.length; i++){
+        let pageRank = val.get(pages[i].url);
+        pages[i].pageRank = pageRank;
+        modifiedPages.push(pages[i]);
+      }
+      saveAllPages(modifiedPages);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  });
+}
+
+function addPageRankToManPages(){
+  pageRank.getManPageRank().then(val => {
+    dbModels.ManPage.find({})
+    .then(pages => {
+      let modifiedPages = [];
+      for(let i = 0; i < pages.length; i++){
+        let pageRank = val.get(pages[i].url);
+        pages[i].pageRank = pageRank;
+        modifiedPages.push(pages[i]);
+      }
+      saveAllPages(modifiedPages);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  });
+}
 
 function saveAllPages(pages){
   pages.forEach(async (item) =>{
@@ -115,7 +151,10 @@ function saveAllPages(pages){
   });
   console.log("Done");
 }
+
 //updateManPages();
+//addPageRankToFruitPages();
+//addPageRankToManPages();
 
 module.exports = {
   compareNumbers: compareNumbers

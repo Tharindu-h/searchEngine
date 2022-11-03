@@ -7,7 +7,8 @@ const FruitPageSchema = new mongoose.Schema({
   incomingLinks: [String],
   contents: String,
   numOutLinks: Number,
-  numInLinks: Number
+  numInLinks: Number,
+  pageRank: Number
 });
 
 const WordSchema = new mongoose.Schema({
@@ -24,7 +25,8 @@ const ManPageSchema = new mongoose.Schema({
   contents: String,
   words: [WordSchema],
   numOutLinks: Number,
-  numInLinks: Number
+  numInLinks: Number,
+  pageRank: Number
 });
 
 const FruitPageModel = mongoose.model('FruitPage', FruitPageSchema);

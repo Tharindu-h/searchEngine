@@ -7,17 +7,9 @@ const mongoose = require('mongoose');
 const dbPsswd = process.env.MONGODB_PSSWD;
 const dbUrl = `mongodb+srv://tharindu:${dbPsswd}@cluster0.pycye8m.mongodb.net/?retryWrites=true&w=majority`;
 const dbModels = require('./models/schema');
-const pageRank = require('./pageRank');
 const util = require('./util');
 const elasticlunr = require("elasticlunr");
 
-let fruitRank = pageRank.getFruitPageRank().then(val => {
-  fruitRank = val;
-});
-
-let manpageRank = pageRank.getManPageRank().then(val => {
-  manpageRank = val;
-});
 
 //build `index` of the fruit pages
 const fruitIndex = elasticlunr(function () {
@@ -96,12 +88,10 @@ app.get('/fruits', function(req, res){
   for (let i = 0; i < s.length; i++){
     let doc = fruitIndex.documentStore.getDoc(s[i].ref);
     if (req.query.boost == "true"){
-      doc.score = s[i].score * fruitRank.get(doc.url);
-      doc.pageRank = fruitRank.get(doc.url);
+      doc.score = s[i].score * doc.pageRank;
     }
     else{
       doc.score = s[i].score;
-      doc.pageRank = fruitRank.get(doc.url);
     }
     results.push(doc);
   }
@@ -136,12 +126,10 @@ app.get('/personal', function(req, res){
   for (let i = 0; i < s.length; i++){
     let doc = manIndex.documentStore.getDoc(s[i].ref);
     if (req.query.boost == "true"){
-      doc.score = s[i].score * manpageRank.get(doc.url);
-      doc.pageRank = manpageRank.get(doc.url);
+      doc.score = s[i].score * doc.pageRank;
     }
     else{
       doc.score = s[i].score;
-      doc.pageRank = manpageRank.get(doc.url);
     }
     results.push(doc);
   }
