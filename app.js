@@ -169,7 +169,10 @@ app.param('fruitPageID', function(req, res, next){
 app.get('/fruits/:fruitPageID', function(req, res){
   let tempWords = req.post.contents.split("\n");
   let words = [];
+  let seenWords = new Set();
   for (let i = 0; i < tempWords.length; i++){
+    if(seenWords.has(tempWords[i])){   continue;   }
+    else{   seenWords.add(tempWords[i]);   }
     let count = 1
     let m = {};
     for (let j = 0; j < tempWords.length; j++){
