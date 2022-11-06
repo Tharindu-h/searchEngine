@@ -100,6 +100,13 @@ app.get('/fruits', function(req, res){
 
   res.format({
     'application/json': function(){
+      if (s.length == 0) {
+        s = fruitIndex.search('apple', {});
+      }
+      for (let i = 0; i < req.query.limit; i++) {
+        let doc = fruitIndex.documentStore.getDoc(s[i].ref);
+        results.push(doc);
+      }
       results = results.slice(0, req.query.limit);
       for (let i = 0; i < results.length; i++){
         results[i].name = "Tharindu Hatharasinghage"; 
@@ -141,6 +148,13 @@ app.get('/personal', function(req, res){
 
   res.format({
     'application/json': function(){
+      if (s.length == 0) {
+        s = manIndex.search('test', {});
+      }
+      for (let i = 0; i < req.query.limit; i++) {
+        let doc = manIndex.documentStore.getDoc(s[i].ref);
+        results.push(doc);
+      }
       results = results.slice(0, req.query.limit);
       for (let i = 0; i < results.length; i++){
         results[i].name = "Tharindu Hatharasinghage"; 
