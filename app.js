@@ -101,6 +101,7 @@ app.get('/fruits', function(req, res){
   res.format({
     'application/json': function(){
       results = results.slice(0, req.query.limit);
+      results.push({"name":"Tharindu Hatharasinghage"});
       res.status(200).json(results);
       return;
     },
@@ -139,6 +140,7 @@ app.get('/personal', function(req, res){
   res.format({
     'application/json': function(){
       results = results.slice(0, req.query.limit);
+      results.push({"name":"Tharindu Hatharasinghage"});
       res.status(200).json(results);
       return;
     },
@@ -188,8 +190,10 @@ app.get('/fruits/:fruitPageID', function(req, res){
 
   res.format({
     'application/json': function(){
-      req.post.words = words;
-      res.status(200).json(req.post);
+      let result = req.post.toJSON();
+      result.words = words;
+      result.name = "Tharindu Hatharasinghage";
+      res.status(200).json(result);
       return;
     },
     'text/html': function(){
@@ -220,7 +224,9 @@ app.param('manPageID', function(req, res, next){
 app.get('/personal/:manPageID', function(req, res){
   res.format({
     'application/json': function(){
-      res.status(200).json(req.post);
+      let result = req.post.toJSON();
+      result.name = "Tharindu Hatharasinghage";
+      res.status(200).json(result);
       return;
     },
     'text/html': function(){
