@@ -101,7 +101,9 @@ app.get('/fruits', function(req, res){
   res.format({
     'application/json': function(){
       results = results.slice(0, req.query.limit);
-      results.push({"name":"Tharindu Hatharasinghage"});
+      for (let i = 0; i < results.length; i++){
+        results[i].name = "Tharindu Hatharasinghage"; 
+      }
       res.status(200).json(results);
       return;
     },
@@ -140,7 +142,9 @@ app.get('/personal', function(req, res){
   res.format({
     'application/json': function(){
       results = results.slice(0, req.query.limit);
-      results.push({"name":"Tharindu Hatharasinghage"});
+      for (let i = 0; i < results.length; i++){
+        results[i].name = "Tharindu Hatharasinghage"; 
+      }
       res.status(200).json(results);
       return;
     },
