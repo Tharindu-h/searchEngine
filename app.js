@@ -100,7 +100,17 @@ app.get('/fruits', function(req, res){
 
   res.format({
     'application/json': function(){
+      if (s.length == 0) {
+        s = fruitIndex.search('apple', {});
+      }
+      for (let i = 0; i < req.query.limit; i++) {
+        let doc = fruitIndex.documentStore.getDoc(s[i].ref);
+        results.push(doc);
+      }
       results = results.slice(0, req.query.limit);
+      for (let i = 0; i < results.length; i++){
+        results[i].name = "Tharindu Hatharasinghage"; 
+      }
       res.status(200).json(results);
       return;
     },
@@ -138,7 +148,17 @@ app.get('/personal', function(req, res){
 
   res.format({
     'application/json': function(){
+      if (s.length == 0) {
+        s = manIndex.search('test', {});
+      }
+      for (let i = 0; i < req.query.limit; i++) {
+        let doc = manIndex.documentStore.getDoc(s[i].ref);
+        results.push(doc);
+      }
       results = results.slice(0, req.query.limit);
+      for (let i = 0; i < results.length; i++){
+        results[i].name = "Tharindu Hatharasinghage"; 
+      }
       res.status(200).json(results);
       return;
     },
@@ -188,8 +208,10 @@ app.get('/fruits/:fruitPageID', function(req, res){
 
   res.format({
     'application/json': function(){
-      req.post.words = words;
-      res.status(200).json(req.post);
+      let result = req.post.toJSON();
+      result.words = words;
+      result.name = "Tharindu Hatharasinghage";
+      res.status(200).json(result);
       return;
     },
     'text/html': function(){
@@ -220,7 +242,9 @@ app.param('manPageID', function(req, res, next){
 app.get('/personal/:manPageID', function(req, res){
   res.format({
     'application/json': function(){
-      res.status(200).json(req.post);
+      let result = req.post.toJSON();
+      result.name = "Tharindu Hatharasinghage";
+      res.status(200).json(result);
       return;
     },
     'text/html': function(){
