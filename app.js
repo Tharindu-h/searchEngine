@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express();
-const port = 3000;
+const port = 8000;
 const pug = require('pug');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -9,6 +9,9 @@ const dbUrl = `mongodb+srv://tharindu:${dbPsswd}@cluster0.pycye8m.mongodb.net/?r
 const dbModels = require('./models/schema');
 const util = require('./util');
 const elasticlunr = require("elasticlunr");
+const cors = require('cors');
+
+app.use(cors());
 
 
 //build `index` of the fruit pages
@@ -188,8 +191,9 @@ app.get('/fruits/:fruitPageID', function(req, res){
 
   res.format({
     'application/json': function(){
-      req.post.words = words;
-      res.status(200).json(req.post);
+      let pageDetails = req.post.toObject();
+      pageDetails.words = words;
+      res.status(200).json(pageDetails);
       return;
     },
     'text/html': function(){
